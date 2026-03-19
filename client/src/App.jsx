@@ -21,6 +21,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
       <Route
         path="/"
         element={
@@ -29,7 +30,6 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="issue/:owner/:repo/:number" element={<IssuePage />} />
