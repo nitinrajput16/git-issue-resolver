@@ -9,19 +9,21 @@ import AuthCallback from './pages/AuthCallback';
 
 function ProtectedRoute({ children }) {
   const { user, isLoading } = useAuth();
-  if (isLoading) return <div className="flex h-screen items-center justify-center text-gray-400">Loading…</div>;
+  if (isLoading) return (
+    <div className="flex h-screen items-center justify-center text-gray-400 text-sm">
+      Loading…
+    </div>
+  );
   if (!user) return <Navigate to="/login" replace />;
   return children;
 }
 
 function AppRoutes() {
-  const { user, isLoading } = useAuth();
-  if (isLoading) return null;
-
   return (
     <Routes>
-      <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
+      {/* ← callback route has NO auth check — must mount immediately */}
       <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/login" element={<Login />} />
       <Route
         path="/"
         element={
