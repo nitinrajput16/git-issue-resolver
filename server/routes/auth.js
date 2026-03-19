@@ -7,22 +7,38 @@ router.get('/github', passport.authenticate('github', { scope: ['user:email', 'r
 
 router.get(
   '/github/callback',
-  passport.authenticate('github', { session: false, failureRedirect: `${process.env.CLIENT_URL}/login?error=auth_failed` }),
+  passport.authenticate('github', {
+    session: false,
+    failureRedirect: `${process.env.CLIENT_URL}/login?error=auth_failed`,
+  }),
   (req, res) => {
-    // Sign a JWT with user info
     const token = jwt.sign(
       {
-        _id: req.user._id,
-        username: req.user.username,
+        _id:         req.user._id,
+        username:    req.user.username,
         displayName: req.user.displayName,
-        email: req.user.email,
-        avatarUrl: req.user.avatarUrl,
+        email:       req.user.email,
+        avatarUrl:   req.user.avatarUrl,
       },
       process.env.SESSION_SECRET,
       { expiresIn: '7d' }
     );
-    // Send token to frontend via URL param
-    res.redirect(`${process.env.CLIENT_URL}/auth/callback?token=${token}`);
+
+    // Send an HTML page that stores token and redirects
+    // This avoids Chrome's bounce tracking mitigation
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head><title>Signing in...</title></head>
+        <body>
+          <script>
+            localStorage.setItem('auth_token', '${token}');
+            window.location.href = '${process.env.CLIENT_URL}/dashboard';
+          </script>
+          <p>Signing you in...</p>
+        </body>
+      </html>
+    `);
   }
 );
 
