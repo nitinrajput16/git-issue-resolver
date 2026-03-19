@@ -12,12 +12,9 @@ module.exports = (passport) => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          // upsert — avoids duplicate key errors on repeated logins
-          // accessToken is encrypted by User pre-save hook
           let user = await User.findOne({ githubId: profile.id });
-
           if (user) {
-            user.accessToken = accessToken; // pre-save hook re-encrypts
+            user.accessToken = accessToken;
             user.username    = profile.username;
             user.displayName = profile.displayName || profile.username;
             user.avatarUrl   = profile.photos?.[0]?.value || '';
@@ -29,10 +26,9 @@ module.exports = (passport) => {
               displayName: profile.displayName || profile.username,
               email:       profile.emails?.[0]?.value || '',
               avatarUrl:   profile.photos?.[0]?.value || '',
-              accessToken, // encrypted by pre-save hook
+              accessToken,
             });
           }
-
           return done(null, user);
         } catch (err) {
           return done(err, null);
@@ -41,6 +37,7 @@ module.exports = (passport) => {
     )
   );
 
+  // ← These are required even with session:false, passport needs them
   passport.serializeUser((user, done) => done(null, user));
   passport.deserializeUser((user, done) => done(null, user));
 };
