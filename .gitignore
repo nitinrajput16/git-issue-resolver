@@ -1,0 +1,22 @@
+# Node modules
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# Environment files — ignore all, but keep .env.example files
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# Build output
+dist/
+
+# OS files
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
