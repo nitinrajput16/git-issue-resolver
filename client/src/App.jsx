@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import IssuePage from './pages/IssuePage';
 import History from './pages/History';
 import Layout from './components/Layout';
+import AuthCallback from './pages/AuthCallback';
 
 function ProtectedRoute({ children }) {
   const { user, isLoading } = useAuth();
@@ -28,6 +29,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="issue/:owner/:repo/:number" element={<IssuePage />} />

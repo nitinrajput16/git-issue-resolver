@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -65,7 +64,6 @@ app.use(
 );
 
 app.use(passport.initialize());
-app.use(passport.session());
 
 require('./middleware/passport')(passport);
 
