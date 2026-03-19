@@ -10,14 +10,14 @@ export function AuthProvider({ children }) {
   const { data, isLoading } = useQuery({
     queryKey: ['auth-me'],
     queryFn: async () => {
-      const res = await axios.get('/auth/me', { withCredentials: true });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || ''}/auth/me`, { withCredentials: true });
       return res.data.user;
     },
     retry: false,
   });
 
   const logout = async () => {
-    await axios.post('/auth/logout', {}, { withCredentials: true });
+    await axios.post(`${import.meta.env.VITE_API_URL || ''}/auth/logout`, {}, { withCredentials: true });
     queryClient.clear();
     window.location.href = '/login';
   };

@@ -18,7 +18,7 @@ export default function Login() {
         </p>
 
         <a
-          href="/auth/github"
+          href={`${import.meta.env.VITE_API_URL || ''}/auth/github`}
           className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-gray-900 hover:bg-gray-700 dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 text-white font-medium rounded-lg transition-colors"
         >
           <svg height="18" viewBox="0 0 16 16" className="fill-current" aria-hidden="true">
