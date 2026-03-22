@@ -4,6 +4,7 @@ const passport = require('passport');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const dns = require('dns');
+const rateLimit = require('express-rate-limit');
 
 const authRoutes    = require('./routes/auth');
 const issuesRoutes  = require('./routes/issues');
@@ -36,7 +37,7 @@ async function initMongo() {
 
 initMongo();
 
-app.use(express.json());
+app.use(express.json({ limit: '1mb' })); // Prevent large payload attacks
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true,
@@ -47,11 +48,21 @@ app.use(cors({
 app.use(passport.initialize());
 require('./middleware/passport')(passport);
 
-app.use('/auth',        authRoutes);
-app.use('/api/issues',  issuesRoutes);
-app.use('/api/resolve', resolveRoutes);
-app.use('/api/history', historyRoutes);
-app.use('/api/pr',      prRoutes);
+// Global rate limiting for all API routes
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: { error: 'Too many requests from this IP, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting to all routes
+app.use('/auth', apiLimiter, authRoutes);
+app.use('/api/issues', apiLimiter, issuesRoutes);
+app.use('/api/resolve', apiLimiter, resolveRoutes);
+app.use('/api/history', apiLimiter, historyRoutes);
+app.use('/api/pr', apiLimiter, prRoutes);
 
 app.get('/health',     (req, res) => res.json({ status: 'ok' }));
 app.get('/api/models', (req, res) => res.json({ model: process.env.AI_MODEL, provider: 'openrouter' }));
