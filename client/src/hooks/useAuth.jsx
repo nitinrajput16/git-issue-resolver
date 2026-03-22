@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
@@ -13,13 +13,33 @@ export function AuthProvider({ children }) {
     queryFn: async () => {
       const token = localStorage.getItem('auth_token');
       if (!token) return null;
-      const res = await axios.get(`${BASE}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return res.data.user;
+      try {
+        const res = await axios.get(`${BASE}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data.user;
+      } catch (err) {
+        console.error('Auth check failed:', err.response?.data || err.message);
+        localStorage.removeItem('auth_token');
+        throw err;
+      }
     },
     retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
   });
+
+  // Clear cache when auth token changes
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'auth_token') {
+        console.log('Auth token changed externally, clearing cache');
+        queryClient.clear();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [queryClient]);
 
   const logout = () => {
     localStorage.removeItem('auth_token');

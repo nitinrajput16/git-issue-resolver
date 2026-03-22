@@ -18,6 +18,9 @@ api.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       localStorage.removeItem('auth_token');
+      // Clear React Query cache to trigger re-auth check
+      // Note: This requires access to queryClient, which isn't available here
+      // The auth hook handles this via the useQuery staleTime/cacheTime
       window.location.href = '/login';
     }
     return Promise.reject(err);

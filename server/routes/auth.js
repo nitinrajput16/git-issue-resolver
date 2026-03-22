@@ -33,7 +33,7 @@ router.get(
         <body>
           <script>
             localStorage.setItem('auth_token', '${token}');
-            window.location.href = '${process.env.CLIENT_URL}/dashboard';
+            window.location.href = '${process.env.CLIENT_URL}/auth/callback?token=${token}';
           </script>
           <p>Signing you in...</p>
         </body>
@@ -48,8 +48,9 @@ router.get('/me', (req, res) => {
   try {
     const user = jwt.verify(auth.slice(7), process.env.SESSION_SECRET);
     res.json({ user });
-  } catch {
-    res.status(401).json({ user: null });
+  } catch (err) {
+    console.error('Auth verification error:', err.message);
+    res.status(401).json({ user: null, error: 'Invalid token' });
   }
 });
 

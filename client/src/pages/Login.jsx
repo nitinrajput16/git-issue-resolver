@@ -28,6 +28,10 @@ export default function Login() {
           Continue with GitHub
         </a>
 
+        <p className="text-xs text-gray-400 mt-2">
+          Debug: API URL = {import.meta.env.VITE_API_URL || 'http://localhost:8000'}
+        </p>
+
         <p className="text-xs text-gray-400 mt-6">
           Requires repo and user:email scopes to fetch your issues.
         </p>

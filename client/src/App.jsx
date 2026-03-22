@@ -14,7 +14,10 @@ function ProtectedRoute({ children }) {
       Loading…
     </div>
   );
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) {
+    console.log('No user found, redirecting to login');
+    return <Navigate to="/login" replace />;
+  }
   return children;
 }
 

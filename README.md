@@ -2,19 +2,52 @@
 
 AI-powered tool that analyzes your GitHub issues and generates fixes using OpenRouter (Groq, OpenAI, and more).
 
-## Stack
+## 🚀 Features
 
-- **Frontend**: React + Vite + TailwindCSS + React Query
-- **Backend**: Node.js + Express + Passport.js
+- **Smart Issue Analysis**: AI analyzes issue descriptions, comments, and code context
+- **Multi-Model Support**: Works with Groq, OpenAI, Claude, and any OpenRouter model
+- **GitHub Integration**: OAuth login, fetch issues, apply labels, create pull requests
+- **Resolution History**: Track all AI-generated fixes with confidence scores
+- **Dark/Light Theme**: Built-in theme toggle
+- **Real-time Updates**: Cached resolutions, pagination, search, and filters
+
+## 🛠️ Stack
+
+- **Frontend**: React 18 + Vite + TailwindCSS + React Query + React Router
+- **Backend**: Node.js + Express + Passport.js + Express Session
 - **Database**: MongoDB + Mongoose
-- **Auth**: GitHub OAuth
-- **AI**: OpenRouter API (Groq / OpenAI / any model)
+- **Auth**: GitHub OAuth 2.0 (user:email, repo scopes)
+- **AI**: OpenRouter API (Groq / OpenAI / Claude / any model)
+- **Styling**: TailwindCSS with dark mode support
+- **State**: React Query for server state, localStorage for auth token
 
----
+## 📦 Project Structure
 
-## Setup
+```
+github-issue-resolver/
+├── client/                  # React frontend (Vite)
+│   ├── src/
+│   │   ├── components/      # Layout, IssueCard, ResolutionPanel, ErrorBoundary
+│   │   ├── pages/           # Login, Dashboard, IssuePage, History, AuthCallback
+│   │   ├── hooks/           # useAuth, useTheme
+│   │   ├── lib/             # api.js (axios client)
+│   │   └── App.jsx          # Router setup with protected routes
+│   ├── vite.config.js       # Vite configuration
+│   └── package.json
+├── server/                  # Express backend
+│   ├── routes/              # auth, issues, resolve, history, pr
+│   ├── services/            # githubService, aiService
+│   ├── models/              # User, Resolution (Mongoose)
+│   ├── middleware/          # passport.js, requireAuth.js
+│   ├── index.js             # Server entry with MongoDB connection
+│   └── package.json
+├── package.json             # Root workspace scripts
+└── README.md
+```
 
-### 1. Clone & install
+## ⚙️ Setup
+
+### 1. Clone & Install
 
 ```bash
 git clone <your-repo>
@@ -37,7 +70,7 @@ npm run install:all
 2. Go to Keys → Create Key
 3. Copy the key — it works with Groq, OpenAI, Claude, and dozens of other models
 
-### 4. Configure environment
+### 4. Configure Environment
 
 ```bash
 cd server
@@ -70,7 +103,7 @@ brew services start mongodb-community
 docker run -d -p 27017:27017 mongo
 ```
 
-### 6. Run the app
+### 6. Run the App
 
 ```bash
 # From root — starts both server and client
@@ -79,43 +112,56 @@ npm run dev
 
 Open http://localhost:5173
 
----
+## 🤖 AI Models
 
-## OpenRouter Model Options
-
-| Model | Speed | Cost |
-|-------|-------|------|
-| `meta-llama/llama-3.1-70b-instruct` | Fast | Free tier |
-| `groq/llama-3.1-70b-versatile` | Very fast | Low |
-| `groq/mixtral-8x7b-32768` | Fast, long context | Low |
-| `openai/gpt-4o` | High quality | Medium |
-| `anthropic/claude-3.5-sonnet` | High quality | Medium |
+| Model | Speed | Cost | Notes |
+|-------|-------|------|-------|
+| `meta-llama/llama-3.1-70b-instruct` | Fast | Free tier | Good balance |
+| `groq/llama-3.1-70b-versatile` | Very fast | Low | Best for speed |
+| `groq/mixtral-8x7b-32768` | Fast, long context | Low | Good for long issues |
+| `openai/gpt-4o` | High quality | Medium | Premium quality |
+| `anthropic/claude-3.5-sonnet` | High quality | Medium | Premium quality |
 
 Change `AI_MODEL` in `.env` to switch anytime — no code changes needed.
 
----
+## 🎯 Usage
 
-## Project Structure
+1. **Login**: Click "Continue with GitHub" on the login page
+2. **Dashboard**: View your assigned issues with filters (open/closed/all)
+3. **Resolve**: Click "Resolve with AI" on any issue to analyze and generate a fix
+4. **Review**: View AI-generated root cause, steps, code diff, and explanation
+5. **Apply**: Create a pull request with the suggested fix
+6. **History**: Track all resolutions with confidence scores and search
 
-```
-github-issue-resolver/
-├── client/                  # React frontend (Vite)
-│   └── src/
-│       ├── components/      # Layout, IssueCard, ResolutionPanel
-│       ├── pages/           # Login, Dashboard, IssuePage, History
-│       ├── hooks/           # useAuth
-│       └── lib/             # api.js (axios client)
-├── server/                  # Express backend
-│   ├── routes/              # auth, issues, resolve, history, pr
-│   ├── services/            # githubService, aiService
-│   ├── models/              # User, Resolution (Mongoose)
-│   └── middleware/          # passport.js, requireAuth.js
-└── package.json             # Root workspace scripts
-```
+## 🔧 Key Features
 
----
+### Issue Resolution Flow
+- Fetches issue body, comments, and code context
+- Analyzes with AI to generate root cause, steps, and code fixes
+- Provides confidence score (high/medium/low)
+- Suggests GitHub labels
+- Creates pull requests with the fix
 
-## Deployment
+### Caching & Performance
+- Resolutions cached in MongoDB to avoid duplicate AI calls
+- Pagination for issue lists
+- Rate limiting (10 requests/minute per user)
+- Retry logic for AI calls with exponential backoff
+
+### Security
+- GitHub OAuth with required scopes (user:email, repo)
+- JWT tokens stored in localStorage (7-day expiry)
+- Session-less backend with JWT verification
+- Input validation and sanitization
+
+### UI/UX
+- Dark/light theme toggle
+- Responsive design
+- Skeleton loading states
+- Error boundaries for graceful failures
+- Toast notifications for user feedback
+
+## 🚀 Deployment
 
 ### Frontend → Vercel
 ```bash
@@ -132,3 +178,37 @@ cd client && npm run build
 ### Database → MongoDB Atlas
 - Create a free cluster at https://cloud.mongodb.com
 - Replace `MONGODB_URI` with your Atlas connection string
+
+## 📊 API Endpoints
+
+### Auth
+- `GET /auth/github` - Initiate GitHub OAuth
+- `GET /auth/github/callback` - Handle OAuth callback
+- `GET /auth/me` - Get current user
+- `POST /auth/logout` - Logout
+
+### Issues
+- `GET /api/issues` - List user issues
+- `GET /api/issues/:owner/:repo/:number` - Get issue details
+- `POST /api/issues/:owner/:repo/:number/labels` - Apply labels
+
+### Resolution
+- `POST /api/resolve` - Analyze and resolve issue
+- `GET /api/history` - List resolution history
+- `GET /api/history/:id` - Get specific resolution
+- `DELETE /api/history/:id` - Delete resolution
+
+### Pull Requests
+- `POST /api/pr/create` - Create PR with fix
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
