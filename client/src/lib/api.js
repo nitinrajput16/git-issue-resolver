@@ -13,7 +13,8 @@ api.interceptors.request.use((config) => {
     url: config.url,
     method: config.method,
     hasToken: !!token,
-    tokenLength: token?.length
+    tokenLength: token?.length,
+    baseURL: config.baseURL
   });
   
   if (token) config.headers.Authorization = `Bearer ${token}`;

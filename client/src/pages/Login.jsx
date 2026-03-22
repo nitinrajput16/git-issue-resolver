@@ -39,6 +39,9 @@ export default function Login() {
           <p className="text-xs font-mono text-gray-600 dark:text-gray-400">
             Token in localStorage: {localStorage.getItem('auth_token') ? 'present' : 'missing'}
           </p>
+          <p className="text-xs font-mono text-gray-600 dark:text-gray-400">
+            API URL: {import.meta.env.VITE_API_URL || 'http://localhost:8000'}
+          </p>
         </div>
 
         <p className="text-xs text-gray-400 mt-6">

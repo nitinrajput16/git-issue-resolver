@@ -39,6 +39,7 @@ router.get(
             try {
               localStorage.setItem('auth_token', '${token}');
               console.log('Token set in localStorage:', '${token.substring(0, 20)}...');
+              // Redirect to the auth callback with the token
               window.location.href = '${process.env.CLIENT_URL}/auth/callback?token=${token}';
             } catch (e) {
               console.error('Failed to set token:', e);
@@ -57,7 +58,9 @@ router.get('/me', (req, res) => {
     authorization: auth ? 'Bearer [token]' : 'missing',
     origin: req.get('Origin'),
     referer: req.get('Referer'),
-    userAgent: req.get('User-Agent')
+    userAgent: req.get('User-Agent'),
+    clientUrl: process.env.CLIENT_URL,
+    baseUrl: req.baseUrl
   });
   
   if (!auth?.startsWith('Bearer ')) {

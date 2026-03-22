@@ -12,7 +12,8 @@ function ProtectedRoute({ children }) {
   console.log('ProtectedRoute render:', {
     isLoading,
     hasUser: !!user,
-    username: user?.username
+    username: user?.username,
+    userId: user?._id
   });
   
   if (isLoading) return (

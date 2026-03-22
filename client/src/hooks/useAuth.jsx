@@ -29,7 +29,8 @@ export function AuthProvider({ children }) {
         console.error('Auth check failed:', {
           status: err.response?.status,
           data: err.response?.data,
-          message: err.message
+          message: err.message,
+          baseURL: BASE
         });
         localStorage.removeItem('auth_token');
         throw err;
