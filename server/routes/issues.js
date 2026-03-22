@@ -8,7 +8,6 @@ router.get('/', requireAuth, async (req, res) => {
   try {
     const { filter = 'all', state = 'open', page = 1 } = req.query;
     const token = req.user.getAccessToken(); // ✅ decrypt
-    console.log('Fetching issues with token:', token.substring(0, 20) + '...');
     const issues = await GitHubService.getUserIssues(token, {
       filter,
       state,
@@ -26,7 +25,6 @@ router.get('/:owner/:repo/:number', requireAuth, async (req, res) => {
   const { owner, repo, number } = req.params;
   try {
     const token = req.user.getAccessToken(); // ✅ decrypt
-    console.log('Fetching issue details with token:', token.substring(0, 20) + '...');
     const [issue, comments] = await Promise.all([
       GitHubService.getIssue(token, owner, repo, number),
       GitHubService.getIssueComments(token, owner, repo, number),
@@ -49,7 +47,6 @@ router.post('/:owner/:repo/:number/labels', requireAuth, async (req, res) => {
 
   try {
     const token = req.user.getAccessToken(); // ✅ decrypt
-    console.log('Applying labels with token:', token.substring(0, 20) + '...');
     const result = await GitHubService.applyLabels(token, owner, repo, number, labels);
     res.json({ labels: result });
   } catch (err) {

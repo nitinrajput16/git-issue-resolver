@@ -9,12 +9,6 @@ import AuthCallback from './pages/AuthCallback';
 
 function ProtectedRoute({ children }) {
   const { user, isLoading } = useAuth();
-  console.log('ProtectedRoute render:', {
-    isLoading,
-    hasUser: !!user,
-    username: user?.username,
-    userId: user?._id
-  });
   
   if (isLoading) return (
     <div className="flex h-screen items-center justify-center text-gray-400 text-sm">
@@ -22,7 +16,6 @@ function ProtectedRoute({ children }) {
     </div>
   );
   if (!user) {
-    console.log('No user found, redirecting to login');
     return <Navigate to="/login" replace />;
   }
   return children;

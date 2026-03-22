@@ -24,7 +24,6 @@ router.post('/', requireAuth, resolveLimiter, async (req, res) => {
 
   try {
     const token = req.user.getAccessToken(); // ✅ decrypt
-    console.log('Resolving issue with token:', token.substring(0, 20) + '...');
 
     // ── Duplicate check — skip AI if already resolved (unless force=true) ──
     if (!force) {

@@ -52,26 +52,21 @@ router.post('/create', requireAuth, async (req, res) => {
   }
 
   const token = req.user.getAccessToken(); // ✅ decrypt
-  console.log('Creating PR with token:', token.substring(0, 20) + '...');
   const branchName = `fix/issue-${issueNumber}-${Date.now()}`;
 
   try {
     // 1. Get default branch SHA
-    console.log('Getting default branch for', owner, repo);
     const { sha, branch: baseBranch } = await GitHubService.getDefaultBranchSha(token, owner, repo);
 
     // 2. Create a new branch
-    console.log('Creating branch:', branchName);
     await GitHubService.createBranch(token, owner, repo, branchName, sha);
 
     // 3. Apply each code fix via Contents API
     for (const fix of codeFix) {
-      console.log('Processing file:', fix.filename);
       let fileSha;
       try {
         const existing = await GitHubService.getFileContents(token, owner, repo, fix.filename);
         fileSha = existing.sha;
-        console.log('File exists, updating with SHA:', fileSha.substring(0, 20) + '...');
       } catch (err) {
         if (err.response?.status !== 404) {
           console.error('Failed to fetch file:', err.response?.data || err.message);
@@ -79,7 +74,6 @@ router.post('/create', requireAuth, async (req, res) => {
         }
         // File doesn't exist yet — create it
         fileSha = undefined;
-        console.log('File does not exist, will create new');
       }
 
       await GitHubService.createOrUpdateFile(
@@ -91,11 +85,9 @@ router.post('/create', requireAuth, async (req, res) => {
         `fix: apply AI suggestion for issue #${issueNumber}`,
         fileSha
       );
-      console.log('File updated successfully:', fix.filename);
     }
 
     // 4. Create the Pull Request
-    console.log('Creating pull request');
     const pr = await GitHubService.createPullRequest(token, owner, repo, {
       title: `fix: resolve issue #${issueNumber} — ${issueTitle}`,
       body: `## AI-Generated Fix for #${issueNumber}\n\n${explanation || ''}\n\nCloses #${issueNumber}`,
@@ -103,7 +95,6 @@ router.post('/create', requireAuth, async (req, res) => {
       base: baseBranch,
     });
 
-    console.log('PR created successfully:', pr.html_url);
     res.json({ prUrl: pr.html_url, prNumber: pr.number });
   } catch (err) {
     console.error('Failed to create PR:', {

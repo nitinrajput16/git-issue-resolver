@@ -22,13 +22,11 @@ async function initMongo() {
     : ['8.8.8.8', '1.1.1.1'];
   try {
     dns.setServers(mongoDnsServers);
-    console.log('🌐 Using DNS servers:', mongoDnsServers.join(', '));
   } catch (error) {
     console.error('⚠️  DNS override failed:', error.message);
   }
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ MongoDB connected');
   } catch (err) {
     console.error('❌ MongoDB error:', err.message);
     process.exit(1);
@@ -67,4 +65,4 @@ app.use('/api/pr', apiLimiter, prRoutes);
 app.get('/health',     (req, res) => res.json({ status: 'ok' }));
 app.get('/api/models', (req, res) => res.json({ model: process.env.AI_MODEL, provider: 'openrouter' }));
 
-app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => {});

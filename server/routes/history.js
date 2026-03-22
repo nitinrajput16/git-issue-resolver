@@ -13,7 +13,6 @@ router.get('/', requireAuth, async (req, res) => {
     if (confidence) filter['resolution.confidence'] = confidence;
     if (search) filter.issueTitle = { $regex: search, $options: 'i' };
 
-    console.log('Fetching history with filter:', filter);
     const resolutions = await Resolution.find(filter)
       .sort({ createdAt: -1 })
       .limit(50)
@@ -29,7 +28,6 @@ router.get('/', requireAuth, async (req, res) => {
 // GET /api/history/:id
 router.get('/:id', requireAuth, async (req, res) => {
   try {
-    console.log('Fetching resolution with ID:', req.params.id);
     const resolution = await Resolution.findOne({
       _id: req.params.id,
       userId: req.user._id,
@@ -46,7 +44,6 @@ router.get('/:id', requireAuth, async (req, res) => {
 // DELETE /api/history/:id
 router.delete('/:id', requireAuth, async (req, res) => {
   try {
-    console.log('Deleting resolution with ID:', req.params.id);
     await Resolution.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
     res.json({ success: true });
   } catch (err) {

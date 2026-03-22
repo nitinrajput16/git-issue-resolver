@@ -1,7 +1,6 @@
 const axios = require('axios');
 
 const githubApi = (token) => {
-  console.log('Creating GitHub API client with token:', token.substring(0, 20) + '...');
   return axios.create({
     baseURL: 'https://api.github.com',
     timeout: 10000,

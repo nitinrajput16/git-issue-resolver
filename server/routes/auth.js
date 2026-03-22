@@ -38,11 +38,9 @@ router.get(
           <script>
             try {
               localStorage.setItem('auth_token', '${token}');
-              console.log('Token set in localStorage:', '${token.substring(0, 20)}...');
               // Redirect to the auth callback with the token
               window.location.href = '${process.env.CLIENT_URL}/auth/callback?token=${token}';
             } catch (e) {
-              console.error('Failed to set token:', e);
               document.body.innerHTML = '<p>Authentication failed. Please try again.</p>';
             }
           </script>
@@ -54,23 +52,13 @@ router.get(
 
 router.get('/me', (req, res) => {
   const auth = req.headers.authorization;
-  console.log('Auth check request:', {
-    authorization: auth ? 'Bearer [token]' : 'missing',
-    origin: req.get('Origin'),
-    referer: req.get('Referer'),
-    userAgent: req.get('User-Agent'),
-    clientUrl: process.env.CLIENT_URL,
-    baseUrl: req.baseUrl
-  });
   
   if (!auth?.startsWith('Bearer ')) {
-    console.log('No Bearer token found');
     return res.status(401).json({ user: null, error: 'No token provided' });
   }
   
   try {
     const user = jwt.verify(auth.slice(7), process.env.SESSION_SECRET);
-    console.log('Token verified successfully for user:', user.username);
     // Return the full user object including the encrypted accessToken
     res.json({ user });
   } catch (err) {
