@@ -28,11 +28,11 @@ export default function Login() {
           Continue with GitHub
         </a>
 
-        <p className="text-xs text-gray-400 mt-2">
+        {/* <p className="text-xs text-gray-400 mt-2">
           Debug: API URL = {import.meta.env.VITE_API_URL || 'http://localhost:8000'}
-        </p>
+        </p> */}
 
-        <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+        {/* <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
           <p className="text-xs font-mono text-gray-600 dark:text-gray-400">
             Current URL: {window.location.href}
           </p>
@@ -42,7 +42,7 @@ export default function Login() {
           <p className="text-xs font-mono text-gray-600 dark:text-gray-400">
             API URL: {import.meta.env.VITE_API_URL || 'http://localhost:8000'}
           </p>
-        </div>
+        </div> */}
 
         <p className="text-xs text-gray-400 mt-6">
           Requires repo and user:email scopes to fetch your issues.
