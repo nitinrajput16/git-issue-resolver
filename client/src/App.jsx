@@ -9,6 +9,12 @@ import AuthCallback from './pages/AuthCallback';
 
 function ProtectedRoute({ children }) {
   const { user, isLoading } = useAuth();
+  console.log('ProtectedRoute render:', {
+    isLoading,
+    hasUser: !!user,
+    username: user?.username
+  });
+  
   if (isLoading) return (
     <div className="flex h-screen items-center justify-center text-gray-400 text-sm">
       Loading…

@@ -9,6 +9,12 @@ export default function AuthCallback() {
     const token = params.get('token');
     const error = params.get('error');
     
+    console.log('AuthCallback mounted:', {
+      token: token ? 'present' : 'missing',
+      error: error || 'none',
+      url: window.location.href
+    });
+    
     if (error) {
       console.error('OAuth error:', error);
       navigate('/login?error=auth_failed', { replace: true });
@@ -16,6 +22,7 @@ export default function AuthCallback() {
     }
 
     if (token) {
+      console.log('Setting token in localStorage:', token.substring(0, 20) + '...');
       localStorage.setItem('auth_token', token);
       // Clear any cached auth data to force fresh check
       localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE');

@@ -29,13 +29,22 @@ router.get(
     res.send(`
       <!DOCTYPE html>
       <html>
-        <head><title>Signing in...</title></head>
+        <head>
+          <title>Signing in...</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+        </head>
         <body>
-          <script>
-            localStorage.setItem('auth_token', '${token}');
-            window.location.href = '${process.env.CLIENT_URL}/auth/callback?token=${token}';
-          </script>
           <p>Signing you in...</p>
+          <script>
+            try {
+              localStorage.setItem('auth_token', '${token}');
+              console.log('Token set in localStorage:', '${token.substring(0, 20)}...');
+              window.location.href = '${process.env.CLIENT_URL}/auth/callback?token=${token}';
+            } catch (e) {
+              console.error('Failed to set token:', e);
+              document.body.innerHTML = '<p>Authentication failed. Please try again.</p>';
+            }
+          </script>
         </body>
       </html>
     `);
@@ -44,9 +53,21 @@ router.get(
 
 router.get('/me', (req, res) => {
   const auth = req.headers.authorization;
-  if (!auth?.startsWith('Bearer ')) return res.status(401).json({ user: null });
+  console.log('Auth check request:', {
+    authorization: auth ? 'Bearer [token]' : 'missing',
+    origin: req.get('Origin'),
+    referer: req.get('Referer'),
+    userAgent: req.get('User-Agent')
+  });
+  
+  if (!auth?.startsWith('Bearer ')) {
+    console.log('No Bearer token found');
+    return res.status(401).json({ user: null, error: 'No token provided' });
+  }
+  
   try {
     const user = jwt.verify(auth.slice(7), process.env.SESSION_SECRET);
+    console.log('Token verified successfully for user:', user.username);
     res.json({ user });
   } catch (err) {
     console.error('Auth verification error:', err.message);

@@ -32,6 +32,15 @@ export default function Login() {
           Debug: API URL = {import.meta.env.VITE_API_URL || 'http://localhost:8000'}
         </p>
 
+        <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+          <p className="text-xs font-mono text-gray-600 dark:text-gray-400">
+            Current URL: {window.location.href}
+          </p>
+          <p className="text-xs font-mono text-gray-600 dark:text-gray-400">
+            Token in localStorage: {localStorage.getItem('auth_token') ? 'present' : 'missing'}
+          </p>
+        </div>
+
         <p className="text-xs text-gray-400 mt-6">
           Requires repo and user:email scopes to fetch your issues.
         </p>

@@ -12,14 +12,25 @@ export function AuthProvider({ children }) {
     queryKey: ['auth-me'],
     queryFn: async () => {
       const token = localStorage.getItem('auth_token');
+      console.log('Auth check initiated:', {
+        hasToken: !!token,
+        tokenLength: token?.length,
+        baseURL: BASE
+      });
+      
       if (!token) return null;
       try {
         const res = await axios.get(`${BASE}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log('Auth check successful:', res.data.user?.username);
         return res.data.user;
       } catch (err) {
-        console.error('Auth check failed:', err.response?.data || err.message);
+        console.error('Auth check failed:', {
+          status: err.response?.status,
+          data: err.response?.data,
+          message: err.message
+        });
         localStorage.removeItem('auth_token');
         throw err;
       }
