@@ -23,7 +23,8 @@ router.post('/', requireAuth, resolveLimiter, async (req, res) => {
   }
 
   try {
-    const token = req.user.accessToken;
+    const token = req.user.getAccessToken(); // ✅ decrypt
+    console.log('Resolving issue with token:', token.substring(0, 20) + '...');
 
     // ── Duplicate check — skip AI if already resolved (unless force=true) ──
     if (!force) {
@@ -90,7 +91,7 @@ router.post('/', requireAuth, resolveLimiter, async (req, res) => {
 
     res.json({ resolution, resolutionId: saved._id, cached: false });
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    console.error('Failed to resolve issue:', err.response?.data || err.message);
 
     // Don't leak internal error details in production
     const isDev = process.env.NODE_ENV !== 'production';

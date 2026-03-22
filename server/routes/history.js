@@ -13,6 +13,7 @@ router.get('/', requireAuth, async (req, res) => {
     if (confidence) filter['resolution.confidence'] = confidence;
     if (search) filter.issueTitle = { $regex: search, $options: 'i' };
 
+    console.log('Fetching history with filter:', filter);
     const resolutions = await Resolution.find(filter)
       .sort({ createdAt: -1 })
       .limit(50)
@@ -20,6 +21,7 @@ router.get('/', requireAuth, async (req, res) => {
 
     res.json({ resolutions });
   } catch (err) {
+    console.error('Failed to fetch history:', err.message);
     res.status(500).json({ error: 'Failed to fetch history' });
   }
 });
@@ -27,6 +29,7 @@ router.get('/', requireAuth, async (req, res) => {
 // GET /api/history/:id
 router.get('/:id', requireAuth, async (req, res) => {
   try {
+    console.log('Fetching resolution with ID:', req.params.id);
     const resolution = await Resolution.findOne({
       _id: req.params.id,
       userId: req.user._id,
@@ -35,6 +38,7 @@ router.get('/:id', requireAuth, async (req, res) => {
     if (!resolution) return res.status(404).json({ error: 'Not found' });
     res.json({ resolution });
   } catch (err) {
+    console.error('Failed to fetch resolution:', err.message);
     res.status(500).json({ error: 'Failed to fetch resolution' });
   }
 });
@@ -42,9 +46,11 @@ router.get('/:id', requireAuth, async (req, res) => {
 // DELETE /api/history/:id
 router.delete('/:id', requireAuth, async (req, res) => {
   try {
+    console.log('Deleting resolution with ID:', req.params.id);
     await Resolution.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
     res.json({ success: true });
   } catch (err) {
+    console.error('Failed to delete resolution:', err.message);
     res.status(500).json({ error: 'Failed to delete' });
   }
 });

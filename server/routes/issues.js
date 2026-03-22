@@ -8,6 +8,7 @@ router.get('/', requireAuth, async (req, res) => {
   try {
     const { filter = 'all', state = 'open', page = 1 } = req.query;
     const token = req.user.getAccessToken(); // ✅ decrypt
+    console.log('Fetching issues with token:', token.substring(0, 20) + '...');
     const issues = await GitHubService.getUserIssues(token, {
       filter,
       state,
@@ -15,7 +16,7 @@ router.get('/', requireAuth, async (req, res) => {
     });
     res.json({ issues, page: parseInt(page) });
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    console.error('Failed to fetch issues:', err.response?.data || err.message);
     res.status(500).json({ error: 'Failed to fetch issues from GitHub' });
   }
 });
@@ -25,13 +26,14 @@ router.get('/:owner/:repo/:number', requireAuth, async (req, res) => {
   const { owner, repo, number } = req.params;
   try {
     const token = req.user.getAccessToken(); // ✅ decrypt
+    console.log('Fetching issue details with token:', token.substring(0, 20) + '...');
     const [issue, comments] = await Promise.all([
       GitHubService.getIssue(token, owner, repo, number),
       GitHubService.getIssueComments(token, owner, repo, number),
     ]);
     res.json({ issue, comments });
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    console.error('Failed to fetch issue details:', err.response?.data || err.message);
     res.status(500).json({ error: 'Failed to fetch issue details' });
   }
 });
@@ -47,10 +49,11 @@ router.post('/:owner/:repo/:number/labels', requireAuth, async (req, res) => {
 
   try {
     const token = req.user.getAccessToken(); // ✅ decrypt
+    console.log('Applying labels with token:', token.substring(0, 20) + '...');
     const result = await GitHubService.applyLabels(token, owner, repo, number, labels);
     res.json({ labels: result });
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    console.error('Failed to apply labels:', err.response?.data || err.message);
     res.status(500).json({ error: 'Failed to apply labels' });
   }
 });

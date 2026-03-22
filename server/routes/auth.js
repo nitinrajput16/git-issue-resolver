@@ -71,6 +71,7 @@ router.get('/me', (req, res) => {
   try {
     const user = jwt.verify(auth.slice(7), process.env.SESSION_SECRET);
     console.log('Token verified successfully for user:', user.username);
+    // Return the full user object including the encrypted accessToken
     res.json({ user });
   } catch (err) {
     console.error('Auth verification error:', err.message);

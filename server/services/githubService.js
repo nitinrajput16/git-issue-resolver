@@ -1,7 +1,8 @@
 const axios = require('axios');
 
-const githubApi = (token) =>
-  axios.create({
+const githubApi = (token) => {
+  console.log('Creating GitHub API client with token:', token.substring(0, 20) + '...');
+  return axios.create({
     baseURL: 'https://api.github.com',
     timeout: 10000,
     headers: {
@@ -10,6 +11,7 @@ const githubApi = (token) =>
       'X-GitHub-Api-Version': '2022-11-28',
     },
   });
+};
 
 const GitHubService = {
   async getUserIssues(token, { filter = 'all', state = 'open', page = 1 } = {}) {

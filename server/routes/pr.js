@@ -11,7 +11,8 @@ router.post('/create', requireAuth, async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const token = req.user.accessToken;
+  const token = req.user.getAccessToken(); // ✅ decrypt
+  console.log('Creating PR with token:', token.substring(0, 20) + '...');
   const branchName = `fix/issue-${issueNumber}-${Date.now()}`;
 
   try {
@@ -55,7 +56,7 @@ router.post('/create', requireAuth, async (req, res) => {
 
     res.json({ prUrl: pr.html_url, prNumber: pr.number });
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    console.error('Failed to create PR:', err.response?.data || err.message);
     res.status(500).json({ error: 'Failed to create PR', detail: err.message });
   }
 });
